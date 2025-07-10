@@ -29,7 +29,7 @@ export interface MovieDetails extends Movie {
 export type MovieFilters = {
   'rating.kp'?: string;
   year?: string;
-  'genres.name'?: string | string[];
+  genres?: string[];
   page?: number;
   limit?: number;
 };

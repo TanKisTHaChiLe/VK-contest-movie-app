@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Group,
   Div,
@@ -23,11 +23,17 @@ const genres = [
 
 export const Filters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const [filters, setFilters] = useState({
     rating: [5, 10] as [number, number],
     year: [1990, new Date().getFullYear()] as [number, number],
     genres: searchParams.getAll("genre"),
   });
+
+useEffect(()=> {
+  filters.rating = searchParams.get('rating.kp')?.split('-').map(Number) as [number, number];
+  filters.year = searchParams.get('year')?.split('-').map(Number) as [number, number]
+},[])
 
   const applyFilters = () => {
     const params = new URLSearchParams();
@@ -40,43 +46,57 @@ export const Filters = () => {
   return (
     <Group>
       <Div>
-        <Title level="3">Фильтры</Title>
+        <Title level="3" style={{fontSize:"20px", fontWeight:"600"}}>Фильтры</Title>
       </Div>
 
-      <FormItem top="Рейтинг Кинопоиска">
-        <div style={{ display: "flex", gap: "16px" }}>
+      <FormItem top="Рейтинг Кинопоиска" >
+        <div style={{ display: "flex", gap: "16px"}}>
           <div style={{ flex: 1 }}>
-            <Caption level="1">От</Caption>
+            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>От</Caption>
             <Slider
               value={filters.rating[0]}
               min={0}
               max={10}
               step={0.1}
-              onChange={(value) =>
-                setFilters({
-                  ...filters,
-                  rating: [value, Math.max(value, filters.rating[1])],
-                })
-              }
+              onChange={(value) => {
+                if (value > filters.rating[1]) {
+                  setFilters({
+                    ...filters,
+                    rating: [filters.rating[1], filters.rating[1]], 
+                  });
+                } else {
+                  setFilters({
+                    ...filters,
+                    rating: [value, filters.rating[1]],
+                  });
+                }
+              }}
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Caption level="1">До</Caption>
+            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>До</Caption>
             <Slider
               value={filters.rating[1]}
-              min={filters.rating[0]} // Минимум равен текущему значению "От"
+              min={0}
               max={10}
               step={0.1}
-              onChange={(value) =>
-                setFilters({
-                  ...filters,
-                  rating: [filters.rating[0], value],
-                })
-              }
+              onChange={(value) => {
+                if (value < filters.rating[0]) {
+                  setFilters({
+                    ...filters,
+                    rating: [filters.rating[0], filters.rating[0]], 
+                  });
+                } else {
+                  setFilters({
+                    ...filters,
+                    rating: [filters.rating[0], value],
+                  });
+                }
+              }}
             />
           </div>
         </div>
-        <Caption level="1" style={{ marginTop: 8 }}>
+        <Caption level="1" style={{ marginTop: 8, fontSize:"18px", fontWeight:"400" }}>
           Диапазон: {filters.rating[0].toFixed(1)} -{" "}
           {filters.rating[1].toFixed(1)}
         </Caption>
@@ -85,37 +105,51 @@ export const Filters = () => {
       <FormItem top="Год выпуска">
         <div style={{ display: "flex", gap: "16px" }}>
           <div style={{ flex: 1 }}>
-            <Caption level="1">От</Caption>
+            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>От</Caption>
             <Slider
               value={filters.year[0]}
               min={1990}
               step={1}
               max={new Date().getFullYear()}
-              onChange={(value) =>
-                setFilters({
-                  ...filters,
-                  year: [value, filters.year[1]],
-                })
-              }
+              onChange={(value) => {
+                if (value > filters.year[1]) {
+                  setFilters({
+                    ...filters,
+                    year: [filters.year[1], filters.year[1]],
+                  });
+                } else {
+                  setFilters({
+                    ...filters,
+                    year: [value, filters.year[1]],
+                  });
+                }
+              }}
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Caption level="1">До</Caption>
+            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>До</Caption>
             <Slider
               value={filters.year[1]}
               min={1990}
               max={new Date().getFullYear()}
               step={1}
-              onChange={(value) =>
-                setFilters({
-                  ...filters,
-                  year: [filters.year[0], value],
-                })
-              }
+              onChange={(value) => {
+                if (value < filters.year[0]) {
+                  setFilters({
+                    ...filters,
+                    year: [filters.year[0], filters.year[0]],
+                  });
+                } else {
+                  setFilters({
+                    ...filters,
+                    year: [filters.year[0], value],
+                  });
+                }
+              }}
             />
           </div>
         </div>
-        <Caption level="1" style={{ marginTop: 8 }}>
+        <Caption level="1" style={{ marginTop: 8, fontSize:"18px", fontWeight:"400" }}>
           Годы: {filters.year[0]} - {filters.year[1]}
         </Caption>
       </FormItem>
@@ -133,6 +167,7 @@ export const Filters = () => {
                   : [...filters.genres, genre],
               });
             }}
+            style={{fontSize:"18px",  fontWeight:"400"}}
           >
             {genre}
           </Checkbox>

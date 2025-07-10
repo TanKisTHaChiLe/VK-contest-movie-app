@@ -14,9 +14,9 @@ export const MovieList = observer(() => {
     const params = {
       'rating.kp': searchParams.get('rating.kp'),
       year: searchParams.get('year'),
-      genre: searchParams.getAll('genre')
+      genres: searchParams.getAll('genre')
     };
-    console.log(params)
+
     fetchMovies(params, true); 
   }, [searchParams]);
 
@@ -30,8 +30,9 @@ export const MovieList = observer(() => {
           const params = {
             'rating.kp': searchParams.get('rating.kp'),
             year: searchParams.get('year'),
-            genre: searchParams.getAll('genre')
+            genres: searchParams.getAll('genre')
           };
+          
           fetchMovies(params);
         }
       },

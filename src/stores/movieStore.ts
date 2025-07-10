@@ -30,12 +30,12 @@ class MovieStore {
     try {
       console.log(params)
       const response = await fetchMovies({ ...params, page: this.page });
-     
+     //console.log(response.data)
       runInAction(() => {
         this.movies = [...this.movies, ...response.data.docs];
         this.hasMore = response.data.docs.length > 0;
         this.page++;
-         console.log(response)
+         console.log(response, this.page)
       });
     } catch (error) {
       runInAction(() => {
