@@ -1,26 +1,31 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ConfigProvider, AdaptivityProvider, AppRoot } from '@vkontakte/vkui';
+import '@vkontakte/vkui/dist/vkui.css';
 
-function App() {
+import { HomePage } from './pages/HomePage';
+import { MoviePage } from './pages/MoviePage';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { Layout } from './components/common/Layout';
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ConfigProvider>
+      <AdaptivityProvider>
+        <AppRoot mode="full">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="movie/:id" element={<MoviePage />} />
+                <Route path="favorites" element={<FavoritesPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AppRoot>
+      </AdaptivityProvider>
+    </ConfigProvider>
   );
-}
+};
 
 export default App;
