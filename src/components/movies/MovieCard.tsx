@@ -29,7 +29,7 @@ const handleClick = () => {
       onClick={handleClick}
     >
       <Div>
-        <Title level="3">{movie.name}</Title>
+        <Title level="3">{movie.name ? movie.name : movie.alternativeName}</Title>
         <Caption level="1">
           <Icon12Star /> {movie.rating?.kp.toFixed(1)} · {movie.year}
         </Caption>

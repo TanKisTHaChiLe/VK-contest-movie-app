@@ -14,13 +14,13 @@ export const fetchMovies = (params?: MovieFilters) => {
     if(params.genres && params.genres.length>0){
       params.genres.forEach(genre => {
         console.log(genre)
-        queryParams.append('genres.name', genre)
+        queryParams.append('genres.name', `+${genre}`)
       })
     }
   }
 queryParams.set('page', `${params?.page}`)
 queryParams.set('limit', '50');
-//console.log(queryParams.toString())
+console.log(queryParams.toString())
   return apiClient.get<{ docs: Movie[] }>(`/movie?${queryParams.toString()}`);
 };
 
