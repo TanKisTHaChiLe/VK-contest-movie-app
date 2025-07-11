@@ -25,15 +25,26 @@ export const Filters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [filters, setFilters] = useState({
-    rating: [5, 10] as [number, number],
+    rating: [0, 10] as [number, number],
     year: [1990, new Date().getFullYear()] as [number, number],
     genres: searchParams.getAll("genre"),
   });
 
-useEffect(()=> {
-  filters.rating = searchParams.get('rating.kp')?.split('-').map(Number) as [number, number];
-  filters.year = searchParams.get('year')?.split('-').map(Number) as [number, number]
-},[])
+  useEffect(() => {
+    if (searchParams.get("rating.kp")) {
+      filters.rating = searchParams
+        .get("rating.kp")
+        ?.split("-")
+        .map(Number) as [number, number];
+    }
+
+    if (searchParams.get("year")) {
+      filters.year = searchParams.get("year")?.split("-").map(Number) as [
+        number,
+        number
+      ];
+    }
+  }, []);
 
   const applyFilters = () => {
     const params = new URLSearchParams();
@@ -46,13 +57,24 @@ useEffect(()=> {
   return (
     <Group>
       <Div>
-        <Title level="3" style={{fontSize:"20px", fontWeight:"600"}}>Фильтры</Title>
+        <Title level="3" style={{ fontSize: "20px", fontWeight: "600" }}>
+          Фильтры
+        </Title>
       </Div>
 
-      <FormItem top="Рейтинг Кинопоиска" >
-        <div style={{ display: "flex", gap: "16px"}}>
+      <FormItem top="Рейтинг Кинопоиска">
+        <div style={{ display: "flex", gap: "16px" }}>
           <div style={{ flex: 1 }}>
-            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>От</Caption>
+            <Caption
+              level="1"
+              style={{
+                fontSize: "18px",
+                marginBottom: "8px",
+                fontWeight: "400",
+              }}
+            >
+              От
+            </Caption>
             <Slider
               value={filters.rating[0]}
               min={0}
@@ -62,7 +84,7 @@ useEffect(()=> {
                 if (value > filters.rating[1]) {
                   setFilters({
                     ...filters,
-                    rating: [filters.rating[1], filters.rating[1]], 
+                    rating: [filters.rating[1], filters.rating[1]],
                   });
                 } else {
                   setFilters({
@@ -74,7 +96,16 @@ useEffect(()=> {
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>До</Caption>
+            <Caption
+              level="1"
+              style={{
+                fontSize: "18px",
+                marginBottom: "8px",
+                fontWeight: "400",
+              }}
+            >
+              До
+            </Caption>
             <Slider
               value={filters.rating[1]}
               min={0}
@@ -84,7 +115,7 @@ useEffect(()=> {
                 if (value < filters.rating[0]) {
                   setFilters({
                     ...filters,
-                    rating: [filters.rating[0], filters.rating[0]], 
+                    rating: [filters.rating[0], filters.rating[0]],
                   });
                 } else {
                   setFilters({
@@ -96,7 +127,10 @@ useEffect(()=> {
             />
           </div>
         </div>
-        <Caption level="1" style={{ marginTop: 8, fontSize:"18px", fontWeight:"400" }}>
+        <Caption
+          level="1"
+          style={{ marginTop: 8, fontSize: "18px", fontWeight: "400" }}
+        >
           Диапазон: {filters.rating[0].toFixed(1)} -{" "}
           {filters.rating[1].toFixed(1)}
         </Caption>
@@ -105,7 +139,16 @@ useEffect(()=> {
       <FormItem top="Год выпуска">
         <div style={{ display: "flex", gap: "16px" }}>
           <div style={{ flex: 1 }}>
-            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>От</Caption>
+            <Caption
+              level="1"
+              style={{
+                fontSize: "18px",
+                marginBottom: "8px",
+                fontWeight: "400",
+              }}
+            >
+              От
+            </Caption>
             <Slider
               value={filters.year[0]}
               min={1990}
@@ -127,7 +170,16 @@ useEffect(()=> {
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Caption level="1" style={{fontSize:"18px", marginBottom: '8px', fontWeight:"400"}}>До</Caption>
+            <Caption
+              level="1"
+              style={{
+                fontSize: "18px",
+                marginBottom: "8px",
+                fontWeight: "400",
+              }}
+            >
+              До
+            </Caption>
             <Slider
               value={filters.year[1]}
               min={1990}
@@ -149,7 +201,10 @@ useEffect(()=> {
             />
           </div>
         </div>
-        <Caption level="1" style={{ marginTop: 8, fontSize:"18px", fontWeight:"400" }}>
+        <Caption
+          level="1"
+          style={{ marginTop: 8, fontSize: "18px", fontWeight: "400" }}
+        >
           Годы: {filters.year[0]} - {filters.year[1]}
         </Caption>
       </FormItem>
@@ -167,7 +222,7 @@ useEffect(()=> {
                   : [...filters.genres, genre],
               });
             }}
-            style={{fontSize:"18px",  fontWeight:"400"}}
+            style={{ fontSize: "18px", fontWeight: "400" }}
           >
             {genre}
           </Checkbox>
