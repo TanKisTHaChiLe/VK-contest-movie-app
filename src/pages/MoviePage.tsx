@@ -15,6 +15,7 @@ import {
   Card,
   CardGrid,
   Image,
+  Badge,
 } from "@vkontakte/vkui";
 import {
   Icon20FavoriteOutline,
@@ -22,6 +23,8 @@ import {
   Icon12Clock,
   Icon12Star,
   Icon12InfoCircle,
+  Icon16Dropdown,
+  Icon24ShareOutline,
 } from "@vkontakte/icons";
 import movieStore from "../stores/movieStore";
 import { fetchMovieById } from "../api/movieAPI";
@@ -69,28 +72,53 @@ export const MoviePage = observer(() => {
   const posterUrl = movie.poster.url;
   const rating = movie.rating.kp.toFixed(1);
   const year = movie.year;
-  const movieLength = movie.movieLength ? `${movie.movieLength} мин.` : "—";
-  const ageRating = movie.ageRating ? `${movie.ageRating}+` : "—";
-  const premiereDate = movie.premiere?.world
-    ? new Date(movie.premiere.world).toLocaleDateString("ru-RU")
-    : null;
+  const movieLength = movie.movieLength ? `${movie.movieLength} мин.` : null;
+  const ageRating = movie.ageRating ? `${movie.ageRating}+` : null;
+
+
+const premiereDates = [
+  movie.premiere?.country,
+  movie.premiere?.world,
+  movie.premiere?.cinema,
+  movie.premiere?.bluray,
+  movie.premiere?.dvd,
+  movie.premiere?.digital,
+  movie.premiere?.russia,
+]
+  .filter(Boolean)
+  .map(date => new Date(date as string));
+
+const earliestPremiereDate = premiereDates.length > 0 
+  ? new Date(Math.min(...premiereDates.map(date => date.getTime())))
+  : null;
+
+const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earliestPremiereDate?.toLocaleDateString('ru-RU') : year;
 
   const handleGoBack = () => {
     if (window.history.state && window.history.state.idx > 0) {
-      navigate(-1); 
+      navigate(-1);
     } else {
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   };
 
+  const formatNumber = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  };
+
+  const actors = movie.persons?.filter((p) => p.enProfession === "actor" || p.profession === "актеры")
+    .slice(0, 8) || [];
+
+  const directors = movie.persons?.filter(
+    (p) => p.enProfession === "director" || p.profession === "режиссеры"
+  ) || [];
+
   return (
     <>
-      <PanelHeader
-        before={<PanelHeaderBack onClick={handleGoBack} />}
-      ></PanelHeader>
+      <PanelHeader style={{position:'absolute'}} separator={false} before={<PanelHeaderBack onClick={handleGoBack} />}></PanelHeader>
 
-      <Group>
-        <Div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <Group style={{margin:25}}>
+        <Div style={{ display: "flex", flexDirection: "column", gap: 24}}>
           <div
             style={{
               display: "flex",
@@ -101,7 +129,7 @@ export const MoviePage = observer(() => {
           >
             <Card
               style={{
-                width: 300,
+                width: 260,
                 flexShrink: 0,
                 borderRadius: 8,
                 overflow: "hidden",
@@ -119,6 +147,7 @@ export const MoviePage = observer(() => {
                 }}
               />
             </Card>
+
             <div
               style={{
                 flex: 1,
@@ -128,9 +157,12 @@ export const MoviePage = observer(() => {
                 gap: 16,
               }}
             >
-              <Title level="1" style={{ marginBottom: 4 }}>
-                {movie.name}
-              </Title>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Title level="1" style={{ marginBottom: 4 }}>
+                  {movie.name ? movie.name : movie.alternativeName}
+                </Title>
+             
+              </div>
 
               <div
                 style={{
@@ -141,7 +173,7 @@ export const MoviePage = observer(() => {
                   alignItems: "center",
                 }}
               >
-                {rating && rating !== "0.0" && (
+                {rating && (
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 4 }}
                   >
@@ -149,14 +181,6 @@ export const MoviePage = observer(() => {
                     <Text weight="2">{rating}</Text>
                   </div>
                 )}
-
-                {/* {year && (
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 4 }}
-                  >
-                    <Text weight="2">{year}</Text>
-                  </div>
-                )} */}
                 {premiereDate && (
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 4 }}
@@ -164,180 +188,392 @@ export const MoviePage = observer(() => {
                     <Text weight="2">{premiereDate}</Text>
                   </div>
                 )}
-                {movie.movieLength && (
+                {movieLength && (
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 4 }}
                   >
                     <Icon12Clock />
-                    <Text weight="2">{movie.movieLength} мин.</Text>
+                    <Text weight="2">{movieLength}</Text>
                   </div>
                 )}
 
-                {movie.ageRating && (
+                {ageRating && (
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 4 }}
                   >
                     <Icon12InfoCircle />
-                    <Text weight="2">{movie.ageRating}+</Text>
+                    <Text weight="2">{ageRating}</Text>
                   </div>
                 )}
               </div>
 
-              <Button
-                size="l"
-                mode={isFavorite ? "outline" : "primary"}
-                before={
-                  isFavorite ? (
-                    <Icon20Favorite fill="var(--vkui--color_icon_accent)" />
-                  ) : (
-                    <Icon20FavoriteOutline />
-                  )
-                }
-                onClick={() => movieStore.toggleFavorite(movie)}
-                style={{
-                  marginBottom: 12,
-                  alignSelf: "flex-start",
-                }}
-              >
-                {isFavorite ? "В избранном" : "В избранное"}
-              </Button>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <Button
+                  size="l"
+                  mode={isFavorite ? "outline" : "primary"}
+                  before={
+                    isFavorite ? (
+                      <Icon20Favorite fill="var(--vkui--color_icon_accent)" />
+                    ) : (
+                      <Icon20FavoriteOutline />
+                    )
+                  }
+                  onClick={() => movieStore.toggleFavorite(movie)}
+                >
+                  {isFavorite ? "В избранном" : "В избранное"}
+                </Button>
+
+                
+              </div>
 
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   gap: 8,
+                  marginTop: 8,
                 }}
               >
                 {movie.genres.length > 0 && (
-                  <div>
-                    <Text weight="3" style={{ marginRight: 4 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    <Text weight="2" style={{ marginRight: 4 }}>
                       Жанры:
                     </Text>
-                    <Text>{movie.genres.map((g) => g.name).join(", ")}</Text>
+                    <Text>
+                      {movie.genres.map((g, i) => (
+                        <React.Fragment key={g.name}>
+                          {i > 0 && ", "}
+                          <span>
+                            {g.name}
+                          </span>
+                        </React.Fragment>
+                      ))}
+                    </Text>
                   </div>
                 )}
 
                 {movie.countries && movie.countries.length > 0 && (
-                  <div>
-                    <Text weight="3" style={{ marginRight: 4 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    <Text weight="2" style={{ marginRight: 4 }}>
                       Страны:
                     </Text>
-                    <Text>{movie.countries.map((c) => c.name).join(", ")}</Text>
+                    <Text>
+                      {movie.countries.map((c, i) => (
+                        <React.Fragment key={c.name}>
+                          {i > 0 && ", "}
+                          <span>
+                            {c.name}
+                          </span>
+                        </React.Fragment>
+                      ))}
+                    </Text>
                   </div>
                 )}
               </div>
 
-              {movie.description && (
-                <div style={{ marginTop: 8 }}>
-                  <Header mode="secondary" style={{ paddingLeft: 0 }}>
-                    Описание
-                  </Header>
+            </div>
+          </div>
+
+          {movie.description && (
+            <div style={{ marginTop: 24 }}>
+              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12}}>
+                О фильме
+              </Header>
+              <Text
+                style={{
+                  lineHeight: 1.6,
+                  fontSize: 15,
+                }}
+              >
+                {movie.description}
+              </Text>
+            </div>
+          )}
+
+          <div style={{ marginTop: 24 }}>
+            <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+              Рейтинги
+            </Header>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                gap: 16,
+              }}
+            >
+              <Card mode="outline">
+                <Div>
+                  <Text weight="3">Кинопоиск</Text>
+                  <Title level="2" style={{ marginTop: 4 }}>
+                    {movie.rating.kp.toFixed(1)}
+                  </Title>
                   <Text
                     style={{
-                      lineHeight: 1.6,
-                      fontSize: 15,
+                      color: "var(--vkui--color_text_secondary)",
+                      fontSize: 14,
                     }}
                   >
-                    {movie.description}
+                    {formatNumber(movie.votes.kp)} оценок
                   </Text>
-                </div>
+                </Div>
+              </Card>
+
+              <Card mode="outline">
+                <Div>
+                  <Text weight="3">IMDb</Text>
+                  <Title level="2" style={{ marginTop: 4 }}>
+                    {movie.rating.imdb?.toFixed(1)}
+                  </Title>
+                  <Text
+                    style={{
+                      color: "var(--vkui--color_text_secondary)",
+                      fontSize: 14,
+                    }}
+                  >
+                    {formatNumber(movie.votes.imdb)} оценок
+                  </Text>
+                </Div>
+              </Card>
+
+              {movie.rating.filmCritics > 0 && (
+                <Card mode="outline">
+                  <Div>
+                    <Text weight="3">Критики</Text>
+                    <Title level="2" style={{ marginTop: 4 }}>
+                      {movie.rating.filmCritics.toFixed(1)}
+                    </Title>
+                    <Text
+                      style={{
+                        color: "var(--vkui--color_text_secondary)",
+                        fontSize: 14,
+                      }}
+                    >
+                      {formatNumber(movie.votes.filmCritics)} оценок
+                    </Text>
+                  </Div>
+                </Card>
               )}
             </div>
           </div>
 
-          {/* {movie.persons && movie.persons.length > 0 && (
-  <div style={{ marginTop: 16 }}>
-    <Header mode="secondary" style={{ marginBottom: 16 }}>Актеры и создатели</Header>
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-      gap: 24,
-      justifyItems: 'center'
-    }}>
-      {movie.persons.slice(0, 10).map(person => (
-        <Card key={person.id} style={{ 
-          width: 300,
-          height: 400,
-          padding: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          borderRadius: 8,
-          overflow: 'hidden'
-        }}>
-          {person.photo ? (
-            <div style={{
-              width: '100%',
-              height: 300,
-              position: 'relative'
-            }}>
-              <Image 
-                src={person.photo} 
-                alt={person.name || person.enName || ''}
-                style={{ 
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: 300,
-                  height: 300,
-                  objectFit: 'contain',
-                  objectPosition: 'center'
+          {actors.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+                Актеры
+              </Header>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: 16,
                 }}
-              />
-            </div>
-          ) : (
-            <div style={{
-              width: '100%',
-              height: 300,
-              backgroundColor: 'var(--vkui--color_background_secondary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--vkui--color_text_secondary)',
-              fontSize: 16
-            }}>
-              Нет фото
+              >
+                {actors.map((person) => (
+                  <Card
+                    key={person.id}
+                    style={{
+                      padding: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {person.photo ? (
+                      <Image
+                        src={person.photo}
+                        alt={person.name || person.enName || ""}
+                        style={{
+                          width: "100%",
+                          height: 160,
+                          objectFit: "cover",
+                          objectPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 160,
+                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--vkui--color_text_secondary)",
+                          fontSize: 16,
+                        }}
+                      >
+                        Нет фото
+                      </div>
+                    )}
+
+                    <Div style={{ padding: 12 }}>
+                      <Title
+                        level="3"
+                        style={{
+                          marginBottom: 4,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          lineHeight: 1.3,
+                          fontSize: 14,
+                        }}
+                      >
+                        {person.name || person.enName || "Неизвестно"}
+                      </Title>
+                    </Div>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
-          
-          <div style={{ 
-            padding: 16,
-            height: 100,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
-            <Title level="3" style={{ 
-              marginBottom: 8,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              lineHeight: 1.3,
-              textAlign: 'center'
-            }}>
-              {person.name || person.enName || 'Неизвестно'}
-            </Title>
-            
-            <Text 
-              style={{ 
-                color: 'var(--vkui--color_text_secondary)',
-                fontSize: 14,
-                display: '-webkit-box',
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textAlign: 'center'
-              }}
-            >
-              {person.profession || person.enProfession || 'Актер'}
-            </Text>
-          </div>
-        </Card>
-      ))}
-    </div>
-  </div>
-)} */}
+
+          {directors.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+                Режиссеры
+              </Header>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: 16,
+                }}
+              >
+                {directors.map((person) => (
+                  <Card
+                    key={person.id}
+                    style={{
+                      padding: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {person.photo ? (
+                      <Image
+                        src={person.photo}
+                        alt={person.name || person.enName || ""}
+                        style={{
+                          width: "100%",
+                          height: 160,
+                          objectFit: "cover",
+                          objectPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 160,
+                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--vkui--color_text_secondary)",
+                          fontSize: 16,
+                        }}
+                      >
+                        Нет фото
+                      </div>
+                    )}
+
+                    <Div style={{ padding: 12 }}>
+                      <Title
+                        level="3"
+                        style={{
+                          marginBottom: 4,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          lineHeight: 1.3,
+                          fontSize: 14,
+                        }}
+                      >
+                        {person.name || person.enName || "Неизвестно"}
+                      </Title>
+                    </Div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {movie.sequelsAndPrequels && movie.sequelsAndPrequels.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+                Сиквелы и приквелы
+              </Header>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: 16,
+                }}
+              >
+                {movie.sequelsAndPrequels.map((item) => (
+                  <Card
+                    key={item.id}
+                    style={{
+                      padding: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {item.poster?.url ? (
+                      <Image
+                        src={item.poster.url}
+                        alt={item.name || item.alternativeName || ""}
+                        style={{
+                          width: "100%",
+                          height: 180,
+                          objectFit: "cover",
+                          objectPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 180,
+                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--vkui--color_text_secondary)",
+                          fontSize: 16,
+                        }}
+                      >
+                        Нет постера
+                      </div>
+                    )}
+
+                    <Div style={{ padding: 12 }}>
+                      <Title
+                        level="3"
+                        style={{
+                          marginBottom: 4,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          lineHeight: 1.3,
+                          fontSize: 14,
+                        }}
+                      >
+                        {item.name || item.alternativeName || "Неизвестно"}
+                      </Title>
+                    </Div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </Div>
       </Group>
     </>

@@ -51,7 +51,7 @@ export const MovieList = observer(() => {
   }, [isLoading, hasMore, fetchMovies, searchParams]);
 
   return (
-    <Group>
+    <Group >
       {movies.map(movie => (
         <MovieCard key={movie.id} movie={movie} />
       ))}

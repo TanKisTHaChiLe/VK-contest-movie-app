@@ -11,7 +11,7 @@ export const HomePage = observer(() => {
   }, []);
 
   return (
-    <Group>
+    <Group style={{margin:15}}>
       <Filters />
       <MovieList />
     </Group>

@@ -9,6 +9,7 @@ export const Header = () => (
       zIndex: 1,
       backgroundColor: 'var(--vkui--color_background)'
     }}
+    separator={false}
   >
     <Link to="/" style={{ marginRight: 15, color: 'inherit', textDecoration: 'none' }}>
       Главная
