@@ -24,7 +24,29 @@ export interface MovieDetails extends Movie {
   countries?: Array<{
     name: string;
   }>;
+   persons?: Array<{
+    id: number;
+    name?: string;
+    enName?: string;
+    profession?: string;
+    description?: string;
+    enProfession?: string;
+    photo?: string;
+  }>;
+   premiere?: PremiereDates;
+
 }
+
+interface PremiereDates {
+    country: string | null;
+    digital: string | null;
+    cinema: string | null;
+    bluray: string | null;
+    dvd: string | null;
+    russia: string | null;
+    world: string | null;
+}
+
 
 export type MovieFilters = {
   'rating.kp'?: string;

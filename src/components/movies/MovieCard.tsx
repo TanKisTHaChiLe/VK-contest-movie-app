@@ -30,8 +30,8 @@ const handleClick = () => {
     >
       <Div>
         <Title level="3">{movie.name ? movie.name : movie.alternativeName}</Title>
-        <Caption level="1">
-          <Icon12Star /> {movie.rating?.kp.toFixed(1)} · {movie.year}
+        <Caption level="1" style={{display: 'flex', marginBlockStart: 5}}>
+          <Icon12Star style={{marginInlineEnd: 2}}/> {movie.rating?.kp.toFixed(1)} · {movie.year}
         </Caption>
       </Div>
     </SimpleCell>
