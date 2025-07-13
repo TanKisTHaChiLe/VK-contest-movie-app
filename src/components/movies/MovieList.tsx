@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Group, Spinner } from '@vkontakte/vkui';
 import { MovieCard } from './MovieCard';

@@ -18,9 +18,12 @@ export const fetchMovies = (params?: MovieFilters) => {
       })
     }
   }
+
 queryParams.set('page', `${params?.page}`)
 queryParams.set('limit', '50');
-console.log(queryParams.toString())
+
+// console.log(queryParams.toString())
+
   return apiClient.get<{ docs: Movie[] }>(`/movie?${queryParams.toString()}`);
 };
 

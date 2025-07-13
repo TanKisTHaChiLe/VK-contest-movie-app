@@ -1,41 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { createPortal } from 'react-dom';
 import { 
-  Button, 
   ModalRoot, 
   ModalPage, 
   ModalPageHeader,
   Div,
-  Text
+  Text,
+  Button
 } from '@vkontakte/vkui';
-import { Icon20Favorite, Icon20FavoriteOutline } from '@vkontakte/icons';
-import { Movie } from '../../types/movie';
-import movieStore from '../../stores/movieStore';
+import { Movie } from '../../../types/movie';
+import movieStore from '../../../stores/movieStore';
+import './AddToFavorites.css';
 
 interface AddToFavoritesProps {
   movie: Movie;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const AddToFavorites: React.FC<AddToFavoritesProps> = ({ movie }) => {
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+export const AddToFavorites: React.FC<AddToFavoritesProps> = ({ 
+  movie, 
+  isOpen, 
+  onClose 
+}) => {
   const isFavorite = movieStore.favorites.some(f => f.id === movie.id);
 
   const handleConfirm = () => {
     movieStore.toggleFavorite(movie);
-    setActiveModal(null);
+    onClose();
   };
 
-  return (
-    <>
-      <Button 
-        mode="tertiary"
-        before={isFavorite ? <Icon20Favorite /> : <Icon20FavoriteOutline />}
-        onClick={() => setActiveModal('confirm')}
-      />
+  if (!isOpen) return null;
 
-      <ModalRoot activeModal={activeModal}>
+  return createPortal(
+    <div className="modal-overlay">
+      <ModalRoot activeModal="confirm">
         <ModalPage 
           id="confirm" 
-          onClose={() => setActiveModal(null)}
+          onClose={onClose}
+          settlingHeight={100}
+          hideCloseButton={false}
           header={
             <ModalPageHeader>
               {isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
@@ -61,6 +65,7 @@ export const AddToFavorites: React.FC<AddToFavoritesProps> = ({ movie }) => {
           </Div>
         </ModalPage>
       </ModalRoot>
-    </>
+    </div>,
+    document.body
   );
 };

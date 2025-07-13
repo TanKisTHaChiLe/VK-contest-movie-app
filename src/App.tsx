@@ -1,12 +1,13 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ConfigProvider, AdaptivityProvider, AppRoot } from '@vkontakte/vkui';
-import '@vkontakte/vkui/dist/vkui.css';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ConfigProvider, AdaptivityProvider, AppRoot } from "@vkontakte/vkui";
 
-import { HomePage } from './pages/HomePage';
-import { MoviePage } from './pages/MoviePage';
-import { FavoritesPage } from './pages/FavoritesPage';
-import { Layout } from './components/common/Layout';
+import "@vkontakte/vkui/dist/vkui.css";
+
+import { HomePage } from "./pages/HomePage";
+import { MoviePage } from "./pages/MoviePage";
+import { FavoritesPage } from "./pages/FavoritesPage";
+import { Layout } from "./components/common/Layout";
 
 const App: React.FC = () => {
   return (

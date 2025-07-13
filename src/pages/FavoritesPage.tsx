@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Group, Placeholder } from '@vkontakte/vkui';
 import { Icon28FavoriteOutline } from '@vkontakte/icons';
@@ -7,7 +6,7 @@ import { MovieCard } from '../components/movies/MovieCard';
 
 export const FavoritesPage = observer(() => {
   return (
-    <Group>
+    <Group style={{margin:15}}>
       {movieStore.favorites.length === 0 ? (
         <Placeholder icon={<Icon28FavoriteOutline width={56} height={56} />}>
           Нет избранных фильмов

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { MovieList } from '../components/movies/MovieList';
 import { Filters } from '../components/movies/Filters';

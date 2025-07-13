@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Group,
   Div,
@@ -9,7 +10,6 @@ import {
   Caption,
   Slider,
 } from "@vkontakte/vkui";
-import { useSearchParams } from "react-router-dom";
 
 const genres = [
   "драма",
@@ -44,7 +44,7 @@ export const Filters = () => {
         number
       ];
     }
-  }, []);
+  }, [searchParams]);
 
   const applyFilters = () => {
     const params = new URLSearchParams();

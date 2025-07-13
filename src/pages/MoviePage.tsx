@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import {
   Group,
@@ -10,12 +11,9 @@ import {
   Text,
   Button,
   Spinner,
-  SimpleCell,
   Header,
   Card,
-  CardGrid,
   Image,
-  Badge,
 } from "@vkontakte/vkui";
 import {
   Icon20FavoriteOutline,
@@ -23,20 +21,18 @@ import {
   Icon12Clock,
   Icon12Star,
   Icon12InfoCircle,
-  Icon16Dropdown,
-  Icon24ShareOutline,
 } from "@vkontakte/icons";
 import movieStore from "../stores/movieStore";
 import { fetchMovieById } from "../api/movieAPI";
-import { Movie } from "../types/movie";
-import { useNavigate } from "react-router-dom";
 import { MovieDetails } from "../types/movie";
+import { AddToFavorites } from "../components/modals/AddToFavoritesModal/AddToFavorites";
 
 export const MoviePage = observer(() => {
   const { id } = useParams();
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -75,24 +71,36 @@ export const MoviePage = observer(() => {
   const movieLength = movie.movieLength ? `${movie.movieLength} мин.` : null;
   const ageRating = movie.ageRating ? `${movie.ageRating}+` : null;
 
+  const premiereDates = [
+    movie.premiere?.country,
+    movie.premiere?.world,
+    movie.premiere?.cinema,
+    movie.premiere?.bluray,
+    movie.premiere?.dvd,
+    movie.premiere?.digital,
+    movie.premiere?.russia,
+  ]
+    .filter(Boolean)
+    .map((date) => new Date(date as string));
 
-const premiereDates = [
-  movie.premiere?.country,
-  movie.premiere?.world,
-  movie.premiere?.cinema,
-  movie.premiere?.bluray,
-  movie.premiere?.dvd,
-  movie.premiere?.digital,
-  movie.premiere?.russia,
-]
-  .filter(Boolean)
-  .map(date => new Date(date as string));
+  const earliestPremiereDate =
+    premiereDates.length > 0
+      ? new Date(Math.min(...premiereDates.map((date) => date.getTime())))
+      : null;
 
-const earliestPremiereDate = premiereDates.length > 0 
-  ? new Date(Math.min(...premiereDates.map(date => date.getTime())))
-  : null;
+  const premiereDate = earliestPremiereDate?.toLocaleDateString("ru-RU")
+    ? earliestPremiereDate?.toLocaleDateString("ru-RU")
+    : year;
 
-const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earliestPremiereDate?.toLocaleDateString('ru-RU') : year;
+  const actors =
+    movie.persons
+      ?.filter((p) => p.enProfession === "actor" || p.profession === "актеры")
+      .slice(0, 8) || [];
+
+  const directors =
+    movie.persons?.filter(
+      (p) => p.enProfession === "director" || p.profession === "режиссеры"
+    ) || [];
 
   const handleGoBack = () => {
     if (window.history.state && window.history.state.idx > 0) {
@@ -102,23 +110,24 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
     }
   };
 
+  const handleFavoriteClick = () => {
+    setIsModalOpen(true);
+  };
+
   const formatNumber = (num: number) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
-  const actors = movie.persons?.filter((p) => p.enProfession === "actor" || p.profession === "актеры")
-    .slice(0, 8) || [];
-
-  const directors = movie.persons?.filter(
-    (p) => p.enProfession === "director" || p.profession === "режиссеры"
-  ) || [];
-
   return (
     <>
-      <PanelHeader style={{position:'absolute'}} separator={false} before={<PanelHeaderBack onClick={handleGoBack} />}></PanelHeader>
+      <PanelHeader
+        style={{ position: "absolute" }}
+        separator={false}
+        before={<PanelHeaderBack onClick={handleGoBack} />}
+      ></PanelHeader>
 
-      <Group style={{margin:25}}>
-        <Div style={{ display: "flex", flexDirection: "column", gap: 24}}>
+      <Group style={{ margin: 25 }}>
+        <Div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div
             style={{
               display: "flex",
@@ -161,7 +170,6 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                 <Title level="1" style={{ marginBottom: 4 }}>
                   {movie.name ? movie.name : movie.alternativeName}
                 </Title>
-             
               </div>
 
               <div
@@ -218,12 +226,10 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                       <Icon20FavoriteOutline />
                     )
                   }
-                  onClick={() => movieStore.toggleFavorite(movie)}
+                  onClick={handleFavoriteClick}
                 >
                   {isFavorite ? "В избранном" : "В избранное"}
                 </Button>
-
-                
               </div>
 
               <div
@@ -243,9 +249,7 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                       {movie.genres.map((g, i) => (
                         <React.Fragment key={g.name}>
                           {i > 0 && ", "}
-                          <span>
-                            {g.name}
-                          </span>
+                          <span>{g.name}</span>
                         </React.Fragment>
                       ))}
                     </Text>
@@ -261,22 +265,22 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                       {movie.countries.map((c, i) => (
                         <React.Fragment key={c.name}>
                           {i > 0 && ", "}
-                          <span>
-                            {c.name}
-                          </span>
+                          <span>{c.name}</span>
                         </React.Fragment>
                       ))}
                     </Text>
                   </div>
                 )}
               </div>
-
             </div>
           </div>
 
           {movie.description && (
             <div style={{ marginTop: 24 }}>
-              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12}}>
+              <Header
+                mode="secondary"
+                style={{ paddingLeft: 0, marginBottom: 12 }}
+              >
                 О фильме
               </Header>
               <Text
@@ -291,7 +295,10 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
           )}
 
           <div style={{ marginTop: 24 }}>
-            <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+            <Header
+              mode="secondary"
+              style={{ paddingLeft: 0, marginBottom: 12 }}
+            >
               Рейтинги
             </Header>
             <div
@@ -358,7 +365,10 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
 
           {actors.length > 0 && (
             <div style={{ marginTop: 24 }}>
-              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+              <Header
+                mode="secondary"
+                style={{ paddingLeft: 0, marginBottom: 12 }}
+              >
                 Актеры
               </Header>
               <div
@@ -395,7 +405,8 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                         style={{
                           width: "100%",
                           height: 160,
-                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          backgroundColor:
+                            "var(--vkui--color_background_secondary)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -431,7 +442,10 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
 
           {directors.length > 0 && (
             <div style={{ marginTop: 24 }}>
-              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+              <Header
+                mode="secondary"
+                style={{ paddingLeft: 0, marginBottom: 12 }}
+              >
                 Режиссеры
               </Header>
               <div
@@ -468,7 +482,8 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                         style={{
                           width: "100%",
                           height: 160,
-                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          backgroundColor:
+                            "var(--vkui--color_background_secondary)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -504,7 +519,10 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
 
           {movie.sequelsAndPrequels && movie.sequelsAndPrequels.length > 0 && (
             <div style={{ marginTop: 24 }}>
-              <Header mode="secondary" style={{ paddingLeft: 0, marginBottom: 12 }}>
+              <Header
+                mode="secondary"
+                style={{ paddingLeft: 0, marginBottom: 12 }}
+              >
                 Сиквелы и приквелы
               </Header>
               <div
@@ -541,7 +559,8 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
                         style={{
                           width: "100%",
                           height: 180,
-                          backgroundColor: "var(--vkui--color_background_secondary)",
+                          backgroundColor:
+                            "var(--vkui--color_background_secondary)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -576,6 +595,11 @@ const premiereDate = earliestPremiereDate?.toLocaleDateString('ru-RU') ? earlies
           )}
         </Div>
       </Group>
+      <AddToFavorites
+        movie={movie}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 });
