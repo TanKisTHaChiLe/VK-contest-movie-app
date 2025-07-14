@@ -73,7 +73,6 @@ export const Filters = () => {
     setSearchParams(params);
   };
 
-  // Разбиваем жанры на 3 колонки для лучшего отображения
   const chunkArray = (array: string[], size: number) => {
     const result = [];
     for (let i = 0; i < array.length; i += size) {
