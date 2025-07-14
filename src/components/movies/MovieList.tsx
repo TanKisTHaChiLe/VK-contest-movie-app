@@ -60,7 +60,12 @@ export const MovieList = observer(() => {
       {isLoading && <Spinner size="large" />}
       {!hasMore && movies.length > 0 && (
         <div style={{ textAlign: 'center', padding: 16 }}>
-          Это все фильмы по вашему запросу
+          Это все фильмы по Вашему запросу
+        </div>
+      )}
+      {!hasMore && !movies.length && (
+        <div style={{ textAlign: 'center', padding: 16 }}>
+          Нет фильмов по Вашему запросу
         </div>
       )}
     </Group>
