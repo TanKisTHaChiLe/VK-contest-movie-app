@@ -11,6 +11,18 @@
   align-items: center;
 }
 
+.ModalPageHeader__in {
+  display: flex;
+  align-items: center;
+}
+
+.ModalPageHeader__aside {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
 body.modal-open {
   overflow: hidden;
 }
+
