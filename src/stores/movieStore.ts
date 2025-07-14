@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { fetchMovies } from "../api/movieAPI";
-import { Movie } from "../types/movie";
+import { fetchMovies,fetchSearchMovie } from "../api/movieAPI";
+import { Movie,MovieFilterParams } from "../types/movie";
 
 class MovieStore {
   movies: Movie[] = [];
@@ -15,7 +15,7 @@ class MovieStore {
     this.loadFavorites();
   }
 
-  async fetchMovies(params?: object | null, reset = false) {
+  async fetchMovies(params?: MovieFilterParams, reset = false) {
     if (reset) {
       runInAction(() => {
         this.movies = [];
@@ -28,14 +28,17 @@ class MovieStore {
 
     this.isLoading = true;
     try {
-      console.log(params);
-      const response = await fetchMovies({ ...params, page: this.page });
-      //console.log(response.data)
+      let response: {data: {docs:Movie[]}};
+      if(params?.query?.length){
+         response = await fetchSearchMovie({...params, page: this.page});
+      } else{
+        response = await fetchMovies({ ...params, page: this.page });
+      }
       runInAction(() => {
         this.movies = [...this.movies, ...response.data.docs];
         this.hasMore = response.data.docs.length > 0;
         this.page++;
-        console.log(response, this.page);
+
       });
     } catch (error) {
       runInAction(() => {

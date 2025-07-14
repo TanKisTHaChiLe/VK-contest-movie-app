@@ -67,11 +67,12 @@ interface SequelsAndPrequels {
 }
 
 export type MovieFilterParams = {
-  "rating.kp"?: string;
-  year?: string;
-  genres?: string[];
-  page?: number;
-  limit?: number;
+  "rating.kp"?: string | null;
+  year?: string | null;
+  genres?: string[] | null;
+  page?: number | null;
+  limit?: number | null;
+  query?: string | null;
 };
 
 export type MovieGanres = {

@@ -48,7 +48,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       <SimpleCell
         before={<Avatar src={movie.poster?.url} size={72} />}
         after={
-          <IconButton onClick={handleStarClick}>
+          <IconButton onClick={handleStarClick} aria-label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}>
             {isFavorite ? <Icon20Favorite /> : <Icon20FavoriteOutline />}
           </IconButton>
         }

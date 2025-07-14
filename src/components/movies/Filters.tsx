@@ -10,7 +10,8 @@ import {
   Button,
   Caption,
   Slider,
-  SimpleCell,
+  Search,
+  Spinner,
 } from "@vkontakte/vkui";
 
 const genresDefault = [
@@ -23,10 +24,15 @@ const genresDefault = [
   "детектив",
 ];
 
+const defaultFilters = {};
+
 export const Filters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [genres, setGenres] = useState<string[]>(genresDefault);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
 
   const [filters, setFilters] = useState({
     rating: [0, 10] as [number, number],
@@ -55,6 +61,8 @@ export const Filters = () => {
         .get("rating.kp")
         ?.split("-")
         .map(Number) as [number, number];
+    } else {
+      filters.rating = [0, 10];
     }
 
     if (searchParams.get("year")) {
@@ -62,6 +70,13 @@ export const Filters = () => {
         number,
         number
       ];
+    } else {
+      filters.year = [1990, new Date().getFullYear()];
+    }
+    if (searchParams.get("genre")) {
+      filters.genres = searchParams.getAll("genre");
+    } else {
+      filters.genres = [];
     }
   }, [searchParams]);
 
@@ -70,18 +85,31 @@ export const Filters = () => {
     params.set("rating.kp", `${filters.rating[0]}-${filters.rating[1]}`);
     params.set("year", `${filters.year[0]}-${filters.year[1]}`);
     filters.genres.forEach((g) => params.append("genre", g));
+    params.delete("search");
     setSearchParams(params);
   };
 
-  const chunkArray = (array: string[], size: number) => {
-    const result = [];
-    for (let i = 0; i < array.length; i += size) {
-      result.push(array.slice(i, i + size));
-    }
-    return result;
+  const handleSearch = () => {
+    setFilters({
+      rating: [0, 10],
+      year: [1990, new Date().getFullYear()],
+      genres: [],
+    });
+
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    setSearchParams(params);
   };
 
-  const genreColumns = chunkArray(genres, Math.ceil(genres.length / 3));
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    const params = new URLSearchParams();
+    setSearchParams(params);
+  };
+
+  const handleClearInput = () => {
+    setSearchQuery("");
+  };
 
   return (
     <Group>
@@ -93,7 +121,46 @@ export const Filters = () => {
           Фильтры
         </Title>
       </Div>
-
+      <FormItem>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Search
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            after={
+              searchQuery && (
+                <Button
+                  mode="tertiary"
+                  onClick={handleClearInput}
+                  aria-label="Очистить поиск"
+                >
+                  ×
+                </Button>
+              )
+            }
+            placeholder="Поиск по названию"
+            style={{ flexGrow: 1 }}
+          />
+          {searchParams.has("search") && (
+            <Button
+              onClick={handleClearSearch}
+              mode="tertiary"
+              aria-label="Сбросить поиск"
+              style={{ 
+          minWidth: "auto",
+          padding: "0 12px",
+          flexShrink: 0,
+          marginRight: 8
+        }}
+            >
+              Сбросить
+            </Button>
+          )}
+          <Button onClick={handleSearch} disabled={!searchQuery.trim()}>
+            Найти
+          </Button>
+        </div>
+      </FormItem>
       <FormItem top="Рейтинг Кинопоиска">
         <div style={{ display: "flex", gap: "16px", marginBottom: 8 }}>
           <div style={{ flex: 1 }}>

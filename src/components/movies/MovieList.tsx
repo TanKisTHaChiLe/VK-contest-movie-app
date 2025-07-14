@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
-import { observer } from "mobx-react-lite";
-import { Group, Spinner } from "@vkontakte/vkui";
-import { MovieCard } from "./MovieCard";
-import movieStore from "../../stores/movieStore";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useRef } from 'react';
+import { observer } from 'mobx-react-lite';
+import { Group, Spinner } from '@vkontakte/vkui';
+import { MovieCard } from './MovieCard';
+import movieStore from '../../stores/movieStore';
+import { useSearchParams } from 'react-router-dom';
 
 export const MovieList = observer(() => {
   const [searchParams] = useSearchParams();
@@ -12,12 +12,13 @@ export const MovieList = observer(() => {
 
   useEffect(() => {
     const params = {
-      "rating.kp": searchParams.get("rating.kp"),
-      year: searchParams.get("year"),
-      genres: searchParams.getAll("genre"),
+      'rating.kp': searchParams.get('rating.kp'),
+      year: searchParams.get('year'),
+      genres: searchParams.getAll('genre'),
+      query: searchParams.get('search')
     };
 
-    fetchMovies(params, true);
+    fetchMovies(params, true); 
   }, [searchParams]);
 
   useEffect(() => {
@@ -28,11 +29,11 @@ export const MovieList = observer(() => {
         const [entry] = entries;
         if (entry.isIntersecting && !isLoading && hasMore) {
           const params = {
-            "rating.kp": searchParams.get("rating.kp"),
-            year: searchParams.get("year"),
-            genres: searchParams.getAll("genre"),
+            'rating.kp': searchParams.get('rating.kp'),
+            year: searchParams.get('year'),
+            genres: searchParams.getAll('genre')
           };
-
+          
           fetchMovies(params);
         }
       },
@@ -51,14 +52,14 @@ export const MovieList = observer(() => {
   }, [isLoading, hasMore, fetchMovies, searchParams]);
 
   return (
-    <Group>
-      {movies.map((movie) => (
+    <Group >
+      {movies.map(movie => (
         <MovieCard key={movie.id} movie={movie} />
       ))}
-      <div ref={sentinelRef} style={{ height: "20px" }} />
+      <div ref={sentinelRef} style={{ height: '20px' }} />
       {isLoading && <Spinner size="large" />}
       {!hasMore && movies.length > 0 && (
-        <div style={{ textAlign: "center", padding: 16 }}>
+        <div style={{ textAlign: 'center', padding: 16 }}>
           Это все фильмы по вашему запросу
         </div>
       )}

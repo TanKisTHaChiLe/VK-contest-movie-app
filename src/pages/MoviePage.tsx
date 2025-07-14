@@ -128,19 +128,21 @@ export const MoviePage = observer(() => {
 
       <Group style={{ margin: 25 }}>
         <Div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
           <div
             style={{
               display: "flex",
-              gap: 24,
+              gap: 32,
               flexWrap: "wrap",
-              alignItems: "stretch",
+              alignItems: "flex-start",
             }}
           >
+
             <Card
               style={{
-                width: 260,
+                width: 300,
                 flexShrink: 0,
-                borderRadius: 8,
+                borderRadius: 12,
                 overflow: "hidden",
                 display: "flex",
               }}
@@ -150,7 +152,7 @@ export const MoviePage = observer(() => {
                 alt={movie.name}
                 style={{
                   width: "100%",
-                  height: "100%",
+                  height: 450,
                   objectFit: "cover",
                   objectPosition: "center",
                 }}
@@ -166,24 +168,29 @@ export const MoviePage = observer(() => {
                 gap: 16,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Title level="1" style={{ marginBottom: 4 }}>
-                  {movie.name ? movie.name : movie.alternativeName}
-                </Title>
-              </div>
+              <Title level="1" style={{ marginBottom: 4, fontSize: 28 }}>
+                {movie.name ? movie.name : movie.alternativeName}
+              </Title>
 
               <div
                 style={{
                   display: "flex",
                   gap: 16,
-                  marginBottom: 8,
+                  marginBottom: 12,
                   flexWrap: "wrap",
                   alignItems: "center",
                 }}
               >
                 {rating && (
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: 4 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      backgroundColor: "var(--vkui--color_background_secondary)",
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                    }}
                   >
                     <Icon12Star fill="var(--vkui--color_icon_accent)" />
                     <Text weight="2">{rating}</Text>
@@ -191,14 +198,28 @@ export const MoviePage = observer(() => {
                 )}
                 {premiereDate && (
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: 4 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      backgroundColor: "var(--vkui--color_background_secondary)",
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                    }}
                   >
                     <Text weight="2">{premiereDate}</Text>
                   </div>
                 )}
                 {movieLength && (
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: 4 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      backgroundColor: "var(--vkui--color_background_secondary)",
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                    }}
                   >
                     <Icon12Clock />
                     <Text weight="2">{movieLength}</Text>
@@ -207,7 +228,14 @@ export const MoviePage = observer(() => {
 
                 {ageRating && (
                   <div
-                    style={{ display: "flex", alignItems: "center", gap: 4 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      backgroundColor: "var(--vkui--color_background_secondary)",
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                    }}
                   >
                     <Icon12InfoCircle />
                     <Text weight="2">{ageRating}</Text>
@@ -272,27 +300,27 @@ export const MoviePage = observer(() => {
                   </div>
                 )}
               </div>
+
+              {movie.description && (
+                <div style={{ marginTop: 24 }}>
+                  <Header
+                    mode="secondary"
+                    style={{ paddingLeft: 0, marginBottom: 12 }}
+                  >
+                    О фильме
+                  </Header>
+                  <Text
+                    style={{
+                      lineHeight: 1.6,
+                      fontSize: 16,
+                    }}
+                  >
+                    {movie.description}
+                  </Text>
+                </div>
+              )}
             </div>
           </div>
-
-          {movie.description && (
-            <div style={{ marginTop: 24 }}>
-              <Header
-                mode="secondary"
-                style={{ paddingLeft: 0, marginBottom: 12 }}
-              >
-                О фильме
-              </Header>
-              <Text
-                style={{
-                  lineHeight: 1.6,
-                  fontSize: 15,
-                }}
-              >
-                {movie.description}
-              </Text>
-            </div>
-          )}
 
           <div style={{ marginTop: 24 }}>
             <Header
@@ -374,7 +402,7 @@ export const MoviePage = observer(() => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
                   gap: 16,
                 }}
               >
@@ -395,7 +423,7 @@ export const MoviePage = observer(() => {
                         alt={person.name || person.enName || ""}
                         style={{
                           width: "100%",
-                          height: 160,
+                          height: 200,
                           objectFit: "cover",
                           objectPosition: "center",
                         }}
@@ -404,7 +432,7 @@ export const MoviePage = observer(() => {
                       <div
                         style={{
                           width: "100%",
-                          height: 160,
+                          height: 200,
                           backgroundColor:
                             "var(--vkui--color_background_secondary)",
                           display: "flex",
@@ -451,7 +479,7 @@ export const MoviePage = observer(() => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
                   gap: 16,
                 }}
               >
@@ -472,7 +500,7 @@ export const MoviePage = observer(() => {
                         alt={person.name || person.enName || ""}
                         style={{
                           width: "100%",
-                          height: 160,
+                          height: 200,
                           objectFit: "cover",
                           objectPosition: "center",
                         }}
@@ -481,7 +509,7 @@ export const MoviePage = observer(() => {
                       <div
                         style={{
                           width: "100%",
-                          height: 160,
+                          height: 200,
                           backgroundColor:
                             "var(--vkui--color_background_secondary)",
                           display: "flex",
@@ -528,7 +556,7 @@ export const MoviePage = observer(() => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
                   gap: 16,
                 }}
               >
@@ -549,7 +577,7 @@ export const MoviePage = observer(() => {
                         alt={item.name || item.alternativeName || ""}
                         style={{
                           width: "100%",
-                          height: 180,
+                          height: 200,
                           objectFit: "cover",
                           objectPosition: "center",
                         }}
@@ -558,7 +586,7 @@ export const MoviePage = observer(() => {
                       <div
                         style={{
                           width: "100%",
-                          height: 180,
+                          height: 200,
                           backgroundColor:
                             "var(--vkui--color_background_secondary)",
                           display: "flex",

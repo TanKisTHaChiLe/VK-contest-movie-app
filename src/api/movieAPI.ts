@@ -41,3 +41,15 @@ export const fethGetMovieFilters = () => {
     `/v1/movie/possible-values-by-field?field=genres.name`
   );
 };
+
+export const fetchSearchMovie = (params?: MovieFilterParams) => {
+  const queryParams = new URLSearchParams();
+
+  queryParams.set("page", `${params?.page}`);
+  queryParams.set("limit", "50");
+  queryParams.set("query", `${params?.query}`);
+
+  return apiClient.get<{ docs: Movie[] }>(
+    `/v1.4/movie/search?${queryParams.toString()}`
+  );
+};
