@@ -10,6 +10,7 @@ import {
   Button,
   Caption,
   Slider,
+  SimpleCell,
 } from "@vkontakte/vkui";
 
 const genresDefault = [
@@ -37,19 +38,15 @@ export const Filters = () => {
     const loadGenres = async () => {
       try {
         const response = await fethGetMovieFilters();
-        const genresName = response.data.map(genre => {
-          return genre.name;
-        })
-        setGenres(genresName)
-      }
-      catch (error) {
+        const genresName = response.data.map(genre => genre.name);
+        setGenres(genresName);
+      } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-      finally {
-        setIsLoading(false)
-      }
-    }
-    loadGenres()
+    };
+    loadGenres();
   }, []);
 
   useEffect(() => {
@@ -76,23 +73,35 @@ export const Filters = () => {
     setSearchParams(params);
   };
 
+  // Разбиваем жанры на 3 колонки для лучшего отображения
+  const chunkArray = (array: string[], size: number) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const genreColumns = chunkArray(genres, Math.ceil(genres.length / 3));
+
   return (
     <Group>
       <Div>
-        <Title level="3" style={{ fontSize: "20px", fontWeight: "600" }}>
+        <Title level="3" style={{ fontSize: "20px", fontWeight: "600", marginBottom: 16 }}>
           Фильтры
         </Title>
       </Div>
 
       <FormItem top="Рейтинг Кинопоиска">
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div style={{ display: "flex", gap: "16px", marginBottom: 8 }}>
           <div style={{ flex: 1 }}>
             <Caption
               level="1"
               style={{
-                fontSize: "18px",
+                fontSize: "16px",
                 marginBottom: "8px",
                 fontWeight: "400",
+                color: "var(--text_secondary)",
               }}
             >
               От
@@ -121,9 +130,10 @@ export const Filters = () => {
             <Caption
               level="1"
               style={{
-                fontSize: "18px",
+                fontSize: "16px",
                 marginBottom: "8px",
                 fontWeight: "400",
+                color: "var(--text_secondary)",
               }}
             >
               До
@@ -151,7 +161,12 @@ export const Filters = () => {
         </div>
         <Caption
           level="1"
-          style={{ marginTop: 8, fontSize: "18px", fontWeight: "400" }}
+          style={{ 
+            marginTop: 8, 
+            fontSize: "16px", 
+            fontWeight: "500",
+            color: "var(--text_primary)",
+          }}
         >
           Диапазон: {filters.rating[0].toFixed(1)} -{" "}
           {filters.rating[1].toFixed(1)}
@@ -159,14 +174,15 @@ export const Filters = () => {
       </FormItem>
 
       <FormItem top="Год выпуска">
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div style={{ display: "flex", gap: "16px", marginBottom: 8 }}>
           <div style={{ flex: 1 }}>
             <Caption
               level="1"
               style={{
-                fontSize: "18px",
+                fontSize: "16px",
                 marginBottom: "8px",
                 fontWeight: "400",
+                color: "var(--text_secondary)",
               }}
             >
               От
@@ -195,9 +211,10 @@ export const Filters = () => {
             <Caption
               level="1"
               style={{
-                fontSize: "18px",
+                fontSize: "16px",
                 marginBottom: "8px",
                 fontWeight: "400",
+                color: "var(--text_secondary)",
               }}
             >
               До
@@ -225,34 +242,63 @@ export const Filters = () => {
         </div>
         <Caption
           level="1"
-          style={{ marginTop: 8, fontSize: "18px", fontWeight: "400" }}
+          style={{ 
+            marginTop: 8, 
+            fontSize: "16px", 
+            fontWeight: "500",
+            color: "var(--text_primary)",
+          }}
         >
           Годы: {filters.year[0]} - {filters.year[1]}
         </Caption>
       </FormItem>
 
       <FormItem top="Жанры">
-        {genres.map((genre) => (
-          <Checkbox
-            key={genre}
-            checked={filters.genres.includes(genre)}
-            onChange={() => {
-              setFilters({
-                ...filters,
-                genres: filters.genres.includes(genre)
-                  ? filters.genres.filter((g) => g !== genre)
-                  : [...filters.genres, genre],
-              });
-            }}
-            style={{ fontSize: "18px", fontWeight: "400" }}
-          >
-            {genre}
-          </Checkbox>
-        ))}
+        <div style={{ 
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "12px 16px",
+          alignItems: "center",
+        }}>
+          {genres.map((genre) => (
+            <div key={genre} style={{ 
+              flex: "0 0 auto",
+              minWidth: "120px",
+              maxWidth: "100%",
+            }}>
+              <Checkbox
+                checked={filters.genres.includes(genre)}
+                onChange={() => {
+                  setFilters({
+                    ...filters,
+                    genres: filters.genres.includes(genre)
+                      ? filters.genres.filter((g) => g !== genre)
+                      : [...filters.genres, genre],
+                  });
+                }}
+                style={{ 
+                  fontSize: "16px", 
+                  fontWeight: "400",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {genre}
+              </Checkbox>
+            </div>
+          ))}
+        </div>
       </FormItem>
 
       <Div>
-        <Button size="l" stretched onClick={applyFilters} mode="primary">
+        <Button 
+          size="l" 
+          stretched 
+          onClick={applyFilters} 
+          mode="primary"
+          style={{ marginTop: 16 }}
+        >
           Применить фильтры
         </Button>
       </Div>
