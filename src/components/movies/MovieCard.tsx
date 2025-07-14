@@ -8,7 +8,11 @@ import {
   Caption,
   IconButton,
 } from "@vkontakte/vkui";
-import { Icon12Star, Icon20Favorite, Icon20FavoriteOutline } from "@vkontakte/icons";
+import {
+  Icon12Star,
+  Icon20Favorite,
+  Icon20FavoriteOutline,
+} from "@vkontakte/icons";
 import { Movie } from "../../types/movie";
 import { AddToFavorites } from "../modals/AddToFavoritesModal/AddToFavorites";
 import movieStore from "../../stores/movieStore";

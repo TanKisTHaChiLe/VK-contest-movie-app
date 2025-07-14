@@ -38,7 +38,7 @@ export const Filters = () => {
     const loadGenres = async () => {
       try {
         const response = await fethGetMovieFilters();
-        const genresName = response.data.map(genre => genre.name);
+        const genresName = response.data.map((genre) => genre.name);
         setGenres(genresName);
       } catch (error) {
         console.error(error);
@@ -86,7 +86,10 @@ export const Filters = () => {
   return (
     <Group>
       <Div>
-        <Title level="3" style={{ fontSize: "20px", fontWeight: "600", marginBottom: 16 }}>
+        <Title
+          level="3"
+          style={{ fontSize: "20px", fontWeight: "600", marginBottom: 16 }}
+        >
           Фильтры
         </Title>
       </Div>
@@ -160,9 +163,9 @@ export const Filters = () => {
         </div>
         <Caption
           level="1"
-          style={{ 
-            marginTop: 8, 
-            fontSize: "16px", 
+          style={{
+            marginTop: 8,
+            fontSize: "16px",
             fontWeight: "500",
             color: "var(--text_primary)",
           }}
@@ -241,9 +244,9 @@ export const Filters = () => {
         </div>
         <Caption
           level="1"
-          style={{ 
-            marginTop: 8, 
-            fontSize: "16px", 
+          style={{
+            marginTop: 8,
+            fontSize: "16px",
             fontWeight: "500",
             color: "var(--text_primary)",
           }}
@@ -253,18 +256,23 @@ export const Filters = () => {
       </FormItem>
 
       <FormItem top="Жанры">
-        <div style={{ 
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "12px 16px",
-          alignItems: "center",
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "12px 16px",
+            alignItems: "center",
+          }}
+        >
           {genres.map((genre) => (
-            <div key={genre} style={{ 
-              flex: "0 0 auto",
-              minWidth: "120px",
-              maxWidth: "100%",
-            }}>
+            <div
+              key={genre}
+              style={{
+                flex: "0 0 auto",
+                minWidth: "120px",
+                maxWidth: "100%",
+              }}
+            >
               <Checkbox
                 checked={filters.genres.includes(genre)}
                 onChange={() => {
@@ -275,8 +283,8 @@ export const Filters = () => {
                       : [...filters.genres, genre],
                   });
                 }}
-                style={{ 
-                  fontSize: "16px", 
+                style={{
+                  fontSize: "16px",
                   fontWeight: "400",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
@@ -291,10 +299,10 @@ export const Filters = () => {
       </FormItem>
 
       <Div>
-        <Button 
-          size="l" 
-          stretched 
-          onClick={applyFilters} 
+        <Button
+          size="l"
+          stretched
+          onClick={applyFilters}
           mode="primary"
           style={{ marginTop: 16 }}
         >

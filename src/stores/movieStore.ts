@@ -1,6 +1,6 @@
-import { makeAutoObservable, runInAction } from 'mobx';
-import { fetchMovies } from '../api/movieAPI';
-import { Movie } from '../types/movie';
+import { makeAutoObservable, runInAction } from "mobx";
+import { fetchMovies } from "../api/movieAPI";
+import { Movie } from "../types/movie";
 
 class MovieStore {
   movies: Movie[] = [];
@@ -11,7 +11,7 @@ class MovieStore {
 
   constructor() {
     makeAutoObservable(this);
-     this.fetchMovies = this.fetchMovies.bind(this);
+    this.fetchMovies = this.fetchMovies.bind(this);
     this.loadFavorites();
   }
 
@@ -28,20 +28,20 @@ class MovieStore {
 
     this.isLoading = true;
     try {
-      console.log(params)
+      console.log(params);
       const response = await fetchMovies({ ...params, page: this.page });
-     //console.log(response.data)
+      //console.log(response.data)
       runInAction(() => {
         this.movies = [...this.movies, ...response.data.docs];
         this.hasMore = response.data.docs.length > 0;
         this.page++;
-         console.log(response, this.page)
+        console.log(response, this.page);
       });
     } catch (error) {
       runInAction(() => {
         this.hasMore = false;
       });
-      console.error('Error fetching movies:', error);
+      console.error("Error fetching movies:", error);
     } finally {
       runInAction(() => {
         this.isLoading = false;
@@ -50,17 +50,17 @@ class MovieStore {
   }
 
   toggleFavorite(movie: Movie) {
-    const exists = this.favorites.some(f => f.id === movie.id);
+    const exists = this.favorites.some((f) => f.id === movie.id);
     if (exists) {
-      this.favorites = this.favorites.filter(f => f.id !== movie.id);
+      this.favorites = this.favorites.filter((f) => f.id !== movie.id);
     } else {
       this.favorites.push(movie);
     }
-    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+    localStorage.setItem("favorites", JSON.stringify(this.favorites));
   }
 
   private loadFavorites() {
-    const saved = localStorage.getItem('favorites');
+    const saved = localStorage.getItem("favorites");
     if (saved) {
       try {
         this.favorites = JSON.parse(saved);
@@ -69,7 +69,6 @@ class MovieStore {
       }
     }
   }
-
 }
 
 const movieStore = new MovieStore();

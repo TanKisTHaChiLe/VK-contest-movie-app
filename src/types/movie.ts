@@ -33,7 +33,7 @@ export interface MovieDetails extends Movie {
   }>;
   premiere?: PremiereDates;
   votes: Media;
-  sequelsAndPrequels:SequelsAndPrequels[];
+  sequelsAndPrequels: SequelsAndPrequels[];
 }
 
 interface PremiereDates {
@@ -75,6 +75,6 @@ export type MovieFilterParams = {
 };
 
 export type MovieGanres = {
-  name:string;
-  slug:string;
-}
+  name: string;
+  slug: string;
+};
