@@ -66,10 +66,15 @@ interface SequelsAndPrequels {
   };
 }
 
-export type MovieFilters = {
+export type MovieFilterParams = {
   "rating.kp"?: string;
   year?: string;
   genres?: string[];
   page?: number;
   limit?: number;
 };
+
+export type MovieGanres = {
+  name:string;
+  slug:string;
+}

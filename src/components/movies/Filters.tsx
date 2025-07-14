@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { fethGetMovieFilters } from "../../api/movieAPI";
 import {
   Group,
   Div,
@@ -11,7 +12,7 @@ import {
   Slider,
 } from "@vkontakte/vkui";
 
-const genres = [
+const genresDefault = [
   "драма",
   "комедия",
   "фантастика",
@@ -23,12 +24,33 @@ const genres = [
 
 export const Filters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [genres, setGenres] = useState<string[]>(genresDefault);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [filters, setFilters] = useState({
     rating: [0, 10] as [number, number],
     year: [1990, new Date().getFullYear()] as [number, number],
     genres: searchParams.getAll("genre"),
   });
+
+  useEffect(() => {
+    const loadGenres = async () => {
+      try {
+        const response = await fethGetMovieFilters();
+        const genresName = response.data.map(genre => {
+          return genre.name;
+        })
+        setGenres(genresName)
+      }
+      catch (error) {
+        console.error(error);
+      }
+      finally {
+        setIsLoading(false)
+      }
+    }
+    loadGenres()
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("rating.kp")) {

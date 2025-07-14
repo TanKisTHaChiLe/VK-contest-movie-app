@@ -69,6 +69,7 @@ class MovieStore {
       }
     }
   }
+
 }
 
 const movieStore = new MovieStore();

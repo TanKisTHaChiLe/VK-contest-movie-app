@@ -1,7 +1,7 @@
 import { apiClient } from './client';
-import { Movie, MovieDetails, MovieFilters } from '../types/movie';
+import { Movie, MovieDetails, MovieFilterParams, MovieGanres } from '../types/movie';
 
-export const fetchMovies = (params?: MovieFilters) => {
+export const fetchMovies = (params?: MovieFilterParams) => {
   const queryParams = new URLSearchParams();
 
   if(params){
@@ -22,11 +22,13 @@ export const fetchMovies = (params?: MovieFilters) => {
 queryParams.set('page', `${params?.page}`)
 queryParams.set('limit', '50');
 
-// console.log(queryParams.toString())
-
-  return apiClient.get<{ docs: Movie[] }>(`/movie?${queryParams.toString()}`);
+  return apiClient.get<{ docs: Movie[] }>(`/v1.3/movie?${queryParams.toString()}`);
 };
 
 export const fetchMovieById = (id: number) => {
-  return apiClient.get<MovieDetails>(`/movie/${id}`);
+  return apiClient.get<MovieDetails>(`/v1.3/movie/${id}`);
 };
+
+export const fethGetMovieFilters = () => {
+  return apiClient.get<MovieGanres[]>(`/v1/movie/possible-values-by-field?field=genres.name`)
+}
