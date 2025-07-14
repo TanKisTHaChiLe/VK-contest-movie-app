@@ -16,7 +16,7 @@
    
   },
   "scripts": {
-    "setup-env": "cp .env.default .env",
+    "setup-env": "cp .env.default .env  && echo '.env' >> .gitignore",
     "start": "npm run setup-env && react-scripts start",
     "build": "npm run setup-env && react-scripts build",
     "test": "npm run setup-env && react-scripts test",
